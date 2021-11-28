@@ -11,9 +11,9 @@ func ReadFromRequestBody(request *http.Request, result interface{}) {
 	PanicIfError(err)
 }
 
-func WriteToResponseBody(writter http.ResponseWriter, response interface{}) {
-	writter.Header().Add("Content-type", "Application/json")
-	encoder := json.NewEncoder(writter)
+func WriteToResponseBody(writer http.ResponseWriter, response interface{}) {
+	writer.Header().Add("Content-type", "Application/json")
+	encoder := json.NewEncoder(writer)
 	err := encoder.Encode(response)
 	PanicIfError(err)
 }

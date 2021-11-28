@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/indraprasetya154/golang-restful-api/exception"
 	"github.com/indraprasetya154/golang-restful-api/helper"
 	"github.com/indraprasetya154/golang-restful-api/model/domain"
 	"github.com/indraprasetya154/golang-restful-api/model/web"
@@ -51,7 +52,9 @@ func (service *CategoryService) Update(ctx context.Context, request web.Category
 	defer helper.CommitOrRollback(tx)
 
 	category, err := service.CategoryRepository.FindById(ctx, tx, request.Id)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	category.Name = request.Name
 
@@ -66,7 +69,9 @@ func (service *CategoryService) Delete(ctx context.Context, categoryId int) {
 	defer helper.CommitOrRollback(tx)
 
 	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	service.CategoryRepository.Delete(ctx, tx, category)
 }
@@ -77,7 +82,9 @@ func (service *CategoryService) FindById(ctx context.Context, categoryId int) we
 	defer helper.CommitOrRollback(tx)
 
 	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.ToCategoryResponse(category)
 
