@@ -26,7 +26,7 @@ func (controller *CategoryController) Create(writer http.ResponseWriter, request
 
 	categoryResponse := controller.CategoryService.Create(request.Context(), categoryCreateRequest)
 	webResponse := web.WebResponse{
-		Code:   200,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   categoryResponse,
 	}
@@ -46,7 +46,7 @@ func (controller *CategoryController) Update(writer http.ResponseWriter, request
 
 	categoryResponse := controller.CategoryService.Update(request.Context(), categoryUpdateRequest)
 	webResponse := web.WebResponse{
-		Code:   200,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   categoryResponse,
 	}
@@ -61,7 +61,7 @@ func (controller *CategoryController) Delete(writer http.ResponseWriter, request
 
 	controller.CategoryService.Delete(request.Context(), id)
 	webResponse := web.WebResponse{
-		Code:   200,
+		Code:   http.StatusOK,
 		Status: "OK",
 	}
 
@@ -75,7 +75,7 @@ func (controller *CategoryController) FindById(writer http.ResponseWriter, reque
 
 	categoryResponse := controller.CategoryService.FindById(request.Context(), id)
 	webResponse := web.WebResponse{
-		Code:   200,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   categoryResponse,
 	}
@@ -86,7 +86,7 @@ func (controller *CategoryController) FindById(writer http.ResponseWriter, reque
 func (controller *CategoryController) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	categoryResponses := controller.CategoryService.FindAll(request.Context())
 	webResponse := web.WebResponse{
-		Code:   200,
+		Code:   http.StatusOK,
 		Status: "OK",
 		Data:   categoryResponses,
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/indraprasetya154/golang-restful-api/helper"
 	"github.com/indraprasetya154/golang-restful-api/middleware"
 	"github.com/indraprasetya154/golang-restful-api/repository"
-	"github.com/indraprasetya154/golang-restful-api/router"
+	"github.com/indraprasetya154/golang-restful-api/routes"
 	"github.com/indraprasetya154/golang-restful-api/service"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	categoryService := service.NewCategoryService(categoryRepository, db, validate)
 	categoryController := controller.NewCategoryController(categoryService)
 
-	router := router.NewRouter(categoryController)
+	router := routes.NewRouter(categoryController)
 
 	server := http.Server{
 		Addr:    "localhost:3000",
