@@ -12,9 +12,17 @@ import (
 )
 
 type CategoryService struct {
-	CategoryRepository repository.CategoryRepository
+	CategoryRepository repository.CategoryRepositoryInterface
 	DB                 *sql.DB
 	Validate           *validator.Validate
+}
+
+func NewCategoryService(categoryRepository repository.CategoryRepositoryInterface, db *sql.DB, validate *validator.Validate) CategoryServiceInterface {
+	return &CategoryService{
+		CategoryRepository: categoryRepository,
+		DB:                 db,
+		Validate:           validate,
+	}
 }
 
 func (service *CategoryService) Create(ctx context.Context, request web.CategoryCreateRequest) web.CategoryResponse {

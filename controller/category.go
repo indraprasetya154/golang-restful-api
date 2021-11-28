@@ -11,12 +11,18 @@ import (
 )
 
 type CategoryController struct {
-	CategoryService service.CategoryService
+	CategoryService service.CategoryServiceInterface
+}
+
+func NewCategoryController(categoryService service.CategoryServiceInterface) CategoryControllerInterface {
+	return &CategoryController{
+		CategoryService: categoryService,
+	}
 }
 
 func (controller *CategoryController) Create(writter http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	categoryCreateRequest := web.CategoryCreateRequest{}
-	helper.ReadFromRequestBody(request, categoryCreateRequest)
+	helper.ReadFromRequestBody(request, &categoryCreateRequest)
 
 	categoryResponse := controller.CategoryService.Create(request.Context(), categoryCreateRequest)
 	webResponse := web.WebResponse{
