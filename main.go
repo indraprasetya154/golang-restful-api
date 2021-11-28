@@ -10,6 +10,7 @@ import (
 	"github.com/indraprasetya154/golang-restful-api/controller"
 	"github.com/indraprasetya154/golang-restful-api/exception"
 	"github.com/indraprasetya154/golang-restful-api/helper"
+	"github.com/indraprasetya154/golang-restful-api/middleware"
 	"github.com/indraprasetya154/golang-restful-api/repository"
 	"github.com/indraprasetya154/golang-restful-api/service"
 	"github.com/julienschmidt/httprouter"
@@ -35,7 +36,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    "localhost:3000",
-		Handler: router,
+		Handler: middleware.NewAuthMiddleware(router),
 	}
 
 	err := server.ListenAndServe()
