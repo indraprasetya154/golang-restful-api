@@ -13,6 +13,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/go-playground/validator/v10"
@@ -25,8 +26,19 @@ import (
 	"github.com/indraprasetya154/golang-restful-api/service"
 )
 
+func setupConfig() {
+	viper.AutomaticEnv()
+	viper.SetConfigType("env")
+	viper.SetConfigFile("../.env")
+
+	err := viper.ReadInConfig()
+	helper.PanicIfError(err)
+}
+
 func setupTestDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/belajar_golang_restful_api_test")
+	// init config
+	setupConfig()
+	db, err := sql.Open(viper.GetString("DB_DRIVER"), viper.GetString("DB_USERNAME")+":"+viper.GetString("DB_PASSWORD")+"@tcp("+viper.GetString("DB_HOST")+":"+viper.GetString("DB_PORT")+")/"+viper.GetString("DB_DATABASE"))
 	helper.PanicIfError(err)
 
 	db.SetConnMaxIdleTime(5)
@@ -38,6 +50,9 @@ func setupTestDB() *sql.DB {
 }
 
 func setupRouter(db *sql.DB) http.Handler {
+	// init config
+	setupConfig()
+
 	validate := validator.New()
 	categoryRepository := repository.NewCategoryRepository()
 	categoryService := service.NewCategoryService(categoryRepository, db, validate)
@@ -58,9 +73,9 @@ func TestCreateCategorySuccess(t *testing.T) {
 	router := setupRouter(db)
 
 	requestBody := strings.NewReader(`{"name":"category name test"}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/categories", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "/categories", requestBody)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -84,9 +99,9 @@ func TestCreateCategoryFailed(t *testing.T) {
 	router := setupRouter(db)
 
 	requestBody := strings.NewReader(`{"name":""}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/categories", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "/categories", requestBody)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -117,9 +132,9 @@ func TestUpdateCategorySuccess(t *testing.T) {
 	router := setupRouter(db)
 
 	requestBody := strings.NewReader(`{"name":"category name updated test"}`)
-	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/categories/"+strconv.Itoa(category.Id), requestBody)
+	request := httptest.NewRequest(http.MethodPut, "/categories/"+strconv.Itoa(category.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -152,9 +167,9 @@ func TestUpdateCategoryFailed(t *testing.T) {
 	router := setupRouter(db)
 
 	requestBody := strings.NewReader(`{"name":""}`)
-	request := httptest.NewRequest(http.MethodPut, "http://localhost:3000/categories/"+strconv.Itoa(category.Id), requestBody)
+	request := httptest.NewRequest(http.MethodPut, "/categories/"+strconv.Itoa(category.Id), requestBody)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -184,8 +199,8 @@ func TestGetCategorySuccess(t *testing.T) {
 
 	router := setupRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/categories/"+strconv.Itoa(category.Id), nil)
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request := httptest.NewRequest(http.MethodGet, "/categories/"+strconv.Itoa(category.Id), nil)
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -210,8 +225,8 @@ func TestGetCategoryFailed(t *testing.T) {
 
 	router := setupRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/categories/404", nil)
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request := httptest.NewRequest(http.MethodGet, "/categories/404", nil)
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -241,9 +256,9 @@ func TestDeleteCategorySuccess(t *testing.T) {
 
 	router := setupRouter(db)
 
-	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/categories/"+strconv.Itoa(category.Id), nil)
+	request := httptest.NewRequest(http.MethodDelete, "/categories/"+strconv.Itoa(category.Id), nil)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -266,9 +281,9 @@ func TestDeleteCategoryFailed(t *testing.T) {
 
 	router := setupRouter(db)
 
-	request := httptest.NewRequest(http.MethodDelete, "http://localhost:3000/categories/404", nil)
+	request := httptest.NewRequest(http.MethodDelete, "/categories/404", nil)
 	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -298,8 +313,8 @@ func TestListCategorySuccess(t *testing.T) {
 
 	router := setupRouter(db)
 
-	request := httptest.NewRequest(http.MethodGet, "http://localhost:3000/categories", nil)
-	request.Header.Add("X-API-Key", "RAHASIA")
+	request := httptest.NewRequest(http.MethodGet, "/categories", nil)
+	request.Header.Add("X-API-Key", viper.GetString("X_API_Key"))
 
 	recorder := httptest.NewRecorder()
 
@@ -329,7 +344,7 @@ func TestUnauthorized(t *testing.T) {
 	router := setupRouter(db)
 
 	requestBody := strings.NewReader(`{"name":"category name test"}`)
-	request := httptest.NewRequest(http.MethodPost, "http://localhost:3000/categories", requestBody)
+	request := httptest.NewRequest(http.MethodPost, "/categories", requestBody)
 	request.Header.Add("Content-Type", "application/json")
 
 	recorder := httptest.NewRecorder()

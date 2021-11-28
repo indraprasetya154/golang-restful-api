@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/indraprasetya154/golang-restful-api/helper"
+	"github.com/spf13/viper"
 )
 
 func NewDB() *sql.DB {
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/belajar_golang_restful_api")
+	db, err := sql.Open(viper.GetString("DB_DRIVER"), viper.GetString("DB_USERNAME")+":"+viper.GetString("DB_PASSWORD")+"@tcp("+viper.GetString("DB_HOST")+":"+viper.GetString("DB_PORT")+")/"+viper.GetString("DB_DATABASE"))
 	helper.PanicIfError(err)
 
 	db.SetConnMaxIdleTime(5)
