@@ -1,4 +1,4 @@
-package app
+package router
 
 import (
 	"github.com/indraprasetya154/golang-restful-api/controller"
